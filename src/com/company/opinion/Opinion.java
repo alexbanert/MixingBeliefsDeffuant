@@ -1,4 +1,4 @@
-package com.company;
+package com.company.opinion;
 
 public interface Opinion<T> {
     public T getValue();

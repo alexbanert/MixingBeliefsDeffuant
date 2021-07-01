@@ -1,4 +1,12 @@
-package com.company;
+package com.company.network;
+
+import com.company.Config;
+import com.company.ResultFileWriter;
+import com.company.ResultRow;
+import com.company.agent.Agent;
+import com.company.agent.AgentContinuous;
+import com.company.agent.AgentType;
+import com.company.agent.AgentVector;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,12 +22,13 @@ public class Network1D implements Network {
     boolean logResults = Config.isLogResults();
     int logEveryIteration = Config.getLogEveryIteration();
     ArrayList<ResultRow> results = new ArrayList<>();
+    AgentType agentType = Config.getAgentType();
     Random random = new Random();
 
     public Network1D() {
         generateAgents();
         currentIteration = 0;
-        if (logResults)
+        if (logResults && logEveryIteration != 1)
             results.add(new ResultRow(currentIteration, networkAsArrayList()));
     }
 
@@ -28,28 +37,34 @@ public class Network1D implements Network {
     public void generateAgents() {
         network = new Agent[numberOfAgents];
         for (int i = 0; i < numberOfAgents; i++) {
-            network[i] = new AgentContinuous();
+            if (agentType == AgentType.CONTINUOUS)
+                network[i] = new AgentContinuous();
+            else
+                network[i] = new AgentVector();
         }
     }
 
     @Override
-    public void run() {
+    public ResultRow run() {
         while (currentIteration < totalIterations) {
             step();
-            if (logResults && currentIteration % logEveryIteration == 0) {
+            if (currentIteration % logEveryIteration == 0 && logEveryIteration!=1) {
                 results.add(new ResultRow(currentIteration, networkAsArrayList()));
             }
         }
-        
-        if(logResults)
+
+        if (logResults)
             logResultsToFile();
 
+        return results.get(results.size()-1);
 
     }
+
 
 
     @Override
     public void step() {
+
 
         int firstAgentIndex = random.nextInt(numberOfAgents);
         int secondAgentIndex = random.nextInt(numberOfAgents);
@@ -60,8 +75,17 @@ public class Network1D implements Network {
         Agent agent1 = network[firstAgentIndex];
         Agent agent2 = network[secondAgentIndex];
 
+
+
         if (agent1.distanceTo(agent2) < threshold) {
             agent1.adjustOpinionWith(agent2);
+
+            if (logEveryIteration == 1){
+                ArrayList<String> modified = new ArrayList<>();
+                modified.add(agent1.toString());
+                //modified.add(agent2.toString());
+                results.add(new ResultRow(currentIteration, modified));
+            }
         }
         currentIteration++;
     }
@@ -74,7 +98,7 @@ public class Network1D implements Network {
         return result;
     }
 
-    private void logResultsToFile(){
+    private void logResultsToFile() {
         ResultFileWriter rfw = new ResultFileWriter();
         try {
             rfw.writeToFile(results);

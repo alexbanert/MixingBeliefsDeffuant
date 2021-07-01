@@ -1,4 +1,4 @@
-package com.company;
+package com.company.opinion;
 
 public class OpinionImp<T> implements Opinion<T>{
 

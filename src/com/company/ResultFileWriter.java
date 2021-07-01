@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.agent.AgentType;
+import com.company.network.NetworkType;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,7 +50,7 @@ public class ResultFileWriter {
         }
         if(Config.getAgentType() == AgentType.VECTOR){
             sb.append("m");
-            sb.append(Config.getLatticeSize());
+            sb.append(Config.getOpinionVectorLength());
         }
         sb.append(".txt");
         return sb.toString();

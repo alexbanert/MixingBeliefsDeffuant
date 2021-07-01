@@ -1,4 +1,6 @@
-package com.company;
+package com.company.agent;
+
+import com.company.opinion.Opinion;
 
 public interface Agent<T> {
     public Opinion<T> getOpinion();

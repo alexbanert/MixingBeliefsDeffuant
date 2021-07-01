@@ -1,4 +1,8 @@
-package com.company;
+package com.company.agent;
+
+import com.company.Config;
+import com.company.opinion.Opinion;
+import com.company.opinion.OpinionImp;
 
 public class AgentContinuous implements Agent<Float> {
 
